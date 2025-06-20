@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OUSL Natural Sciences Course Fee Calculator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #1e40af;
+            --accent: #3b82f6;
+            --light: #f0f9ff;
+            --dark: #1e3a8a;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            
+            --gradient-primary: linear-gradient(135deg, #1e3a8a, #1e40af);
+            --gradient-accent: linear-gradient(135deg, #3b82f6, #60a5fa);
+            --gradient-success: linear-gradient(135deg, #10b981, #34d399);
+            --gradient-warning: linear-gradient(135deg, #f59e0b, #fbbf24);
+            --gradient-danger: linear-gradient(135deg, #ef4444, #f87171);
+        }
+        
+        body {
+            background: var(--gradient-primary);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            color: white;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://www.ousl.edu.lk/images/logo.png') no-repeat center center;
+            background-size: contain;
+            opacity: 0.1;
+            z-index: -1;
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            color: white;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 20px;
+            opacity: 0.9;
+            color: #f8f9fa;
+        }
+        
+        .university-logo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .university-logo i {
+            font-size: 2.5rem;
+            color: #f39c12;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 30px;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+        
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--accent);
+            color: var(--dark);
+        }
+        
+        .card-title i {
+            color: var(--accent);
+            font-size: 1.5rem;
+        }
+        
+        .search-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .search-container input {
+            flex: 1;
+            padding: 14px 20px;
+            border: 2px solid var(--accent);
+            border-radius: 50px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+        
+        .search-container input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+        }
+        
+        .level-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .level-btn {
+            background: var(--light);
+            border: none;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 130px;
+            justify-content: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .level-btn:hover {
+            background: var(--accent);
+            color: white;
+            transform: translateY(-3px);
+        }
+        
+        .level-btn.active {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        
+        .course-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            border-left: 5px solid var(--accent);
+            transition: all 0.3s ease;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .course-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            border-left: 5px solid var(--primary);
+        }
+        
+        .course-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            color: var(--dark);
+            min-height: 60px;
+            line-height: 1.4;
+        }
+        
+        .course-card p {
+            font-size: 0.95rem;
+            margin: 6px 0;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .course-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: auto;
+        }
+        
+        .credits {
+            background: var(--accent);
+            color: white;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+        
+        .fee {
+            background: var(--warning);
+            color: white;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+        
+        .add-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--success);
+            color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+        }
+        
+        .add-btn:hover {
+            transform: scale(1.1);
+            background: #219653;
+        }
+        
+        .selected-courses {
+            margin-top: 30px;
+        }
+        
+        .selected-list {
+            max-height: 350px;
+            overflow-y: auto;
+            margin-top: 15px;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 15px;
+            background: #f9f9f9;
+        }
+        
+        .selected-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 18px;
+            background: white;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--accent);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+        }
+        
+        .selected-item:hover {
+            background: #edf7ff;
+            transform: translateX(5px);
+            box-shadow: 0 5px 12px rgba(0,0,0,0.08);
+        }
+        
+        .remove-btn {
+            background: var(--gradient-danger);
+            color: white;
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .remove-btn:hover {
+            transform: scale(1.1);
+            background: #c0392b;
+        }
+        
+        .vouchers {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .voucher {
+            background: var(--gradient-primary);
+            border-radius: 15px;
+            padding: 30px;
+            color: white;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .voucher:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+        }
+        
+        .voucher::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
+        }
+        
+        .voucher h3 {
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .voucher h3 i {
+            background: rgba(255,255,255,0.2);
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 1.3rem;
+        }
+        
+        .voucher-details {
+            margin-top: 20px;
+        }
+        
+        .voucher-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px dashed rgba(255,255,255,0.3);
+            font-size: 1.1rem;
+        }
+        
+        .voucher-total {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 2px dashed rgba(255,255,255,0.5);
+        }
+        
+        .summary {
+            background: var(--gradient-primary);
+            color: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: 1.15rem;
+        }
+        
+        .summary-total {
+            font-size: 2.2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 25px;
+            color: #f1c40f;
+            border-top: 2px solid rgba(255,255,255,0.1);
+        }
+        
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 16px 35px;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            flex: 1;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .btn-primary {
+            background: var(--gradient-accent);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+        }
+        
+        .btn-outline:hover {
+            background: var(--accent);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            padding: 25px;
+            border-radius: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            font-size: 0.95rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .credit-warning {
+            background: var(--gradient-warning);
+            color: white;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 15px 0;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #7f8c8d;
+            font-style: italic;
+            border: 2px dashed #ddd;
+            border-radius: 10px;
+            background: #f9f9f9;
+        }
+        
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 55px;
+            height: 55px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            z-index: 100;
+            font-size: 1.3rem;
+        }
+        
+        .back-to-top:hover {
+            background: var(--primary);
+            transform: translateY(-5px);
+        }
+        
+        .disclaimer {
+            background: #f8f9fa;
+            border-left: 4px solid var(--warning);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+        
+        .developer-info {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            color: white;
+            font-size: 0.95rem;
+        }
+        
+        .developer-card {
+            background: rgba(255,255,255,0.1);
+            padding: 15px 25px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .course-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .vouchers {
+                grid-template-columns: 1fr;
+            }
+            
+            .level-selector {
+                flex-direction: column;
+            }
+            
+            .btn {
+                flex: 100%;
+            padding: 15px;
+            font-size: 1rem;
+            margin-bottom: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            max-width: 100%;
+            min-width: 100%;
+            display: block;
+            text-align: center;
+            flex-basis: 100%;
+            flex-grow: 1;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            align-content: center;
+        }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .search-container {
+                flex-direction: column;
+            }
+            
+            .voucher {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="university-logo">
+                <i class="fas fa-graduation-cap"></i>
+                <div>
+                    <h1>OUSL Natural Sciences Course Fee Calculator</h1>
+                    <p class="subtitle">B.Sc. Degree Programme 2025/2026</p>
+                </div>
+            </div>
+        </header>
+        
+        <main>
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-book-open"></i>
+                    <h2>Select Your Courses</h2>
+                </div>
+                
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="Search by course code or name...">
+                    <button class="btn btn-outline" id="searchBtn"><i class="fas fa-search"></i> Search</button>
+                </div>
+                
+                <div class="level-selector">
+                    <button class="level-btn active" data-level="3">
+                        <i class="fas fa-layer-group"></i> Level 3
+                    </button>
+                    <button class="level-btn" data-level="4">
+                        <i class="fas fa-layer-group"></i> Level 4
+                    </button>
+                    <button class="level-btn" data-level="5">
+                        <i class="fas fa-layer-group"></i> Level 5
+                    </button>
+                </div>
+                
+                <div class="course-grid" id="courseGrid">
+                    <!-- Course cards will be dynamically generated here -->
+                </div>
+                
+                <div class="disclaimer">
+                    <i class="fas fa-exclamation-circle" style="color: #f39c12; margin-right: 10px;"></i>
+                    <strong>Disclaimer:</strong> This calculator is based on the official OUSL Natural Sciences document for the 2025/2026 academic year. While every effort has been made to ensure accuracy, there may be small deviations in practical fees or credit values. Please verify with official university sources before making payments.
+                </div>
+                
+                <div class="selected-courses">
+                    <div class="card-title">
+                        <i class="fas fa-list-check"></i>
+                        <h2>Selected Courses</h2>
+                    </div>
+                    <div class="credit-warning">
+                        <i class="fas fa-exclamation-triangle"></i> 
+                        Maximum 30 credits per academic year
+                    </div>
+                    <div class="selected-list" id="selectedList">
+                        <div class="empty-state">No courses selected yet. Please add courses from above.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    <h2>Payment Vouchers</h2>
+                </div>
+                
+                <div class="vouchers">
+                    <div class="voucher">
+                        <h3><i class="fas fa-money-check"></i> Voucher 1</h3>
+                        <p>60% of course fees + Studentship fee</p>
+                        
+                        <div class="voucher-details">
+                            <div class="voucher-row">
+                                <span>60% Course Fee:</span>
+                                <span>Rs. 0.00</span>
+                            </div>
+                            <div class="voucher-row">
+                                <span>Studentship Fee:</span>
+                                <span>Rs. 3,000.00</span>
+                            </div>
+                            <div class="voucher-total">
+                                Rs. 3,000.00
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="voucher">
+                        <h3><i class="fas fa-money-check"></i> Voucher 2</h3>
+                        <p>40% of course fees + Practical fees</p>
+                        
+                        <div class="voucher-details">
+                            <div class="voucher-row">
+                                <span>40% Course Fee:</span>
+                                <span>Rs. 0.00</span>
+                            </div>
+                            <div class="voucher-row">
+                                <span>Practical Fees:</span>
+                                <span>Rs. 0.00</span>
+                            </div>
+                            <div class="voucher-total">
+                                Rs. 0.00
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="summary">
+                    <div class="summary-row">
+                        <span>Total Credits:</span>
+                        <span>0</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Total Course Fees:</span>
+                        <span>Rs. 0.00</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Total Practical Fees:</span>
+                        <span>Rs. 0.00</span>
+                    </div>
+                    <div class="summary-total">
+                        Total Payable: Rs. 3,000.00
+                    </div>
+                </div>
+                
+                <div class="actions">
+                    <button class="btn btn-primary" id="calculateBtn">
+                        <i class="fas fa-calculator"></i> Calculate Fees
+                    </button>
+                    <button class="btn btn-outline" id="resetBtn">
+                        <i class="fas fa-redo"></i> Reset Selection
+                    </button>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="footer">
+            <div class="developer-info">
+                <div class="developer-card">
+                    <i class="fas fa-user-graduate"></i>
+                    <div>
+                        <strong>Developer:</strong> Abishek R (BSc Natural Sciences - UG)
+                    </div>
+                </div>
+                <div class="developer-card">
+                    <i class="fas fa-envelope"></i>
+                    <div>
+                        <strong>Email:</strong> abi.kumar6324@gmail.com
+                    </div>
+                </div>
+            </div>
+            <p>© 2025 Open University of Sri Lanka - Faculty of Natural Sciences</p>
+            <p>This tool is provided for informational purposes only and is not an official university document.</p>
+        </footer>
+        
+        <div class="back-to-top" id="backToTop">
+            <i class="fas fa-arrow-up"></i>
+        </div>
+    </div>
+
+    <script>
+        // Complete course data for all levels
+        const courses = [
+            // Level 3 Continuing Education Courses
+            { code: "CYE3200", name: "Mathematics for Chemistry and Biology", credits: 2, practicalFee: 0, level: 3 },
+            { code: "LTE34GE", name: "English for Academic Purpose (EAP)", credits: 4, practicalFee: 0, level: 3 },
+            { code: "CSE3213", name: "Information & Communication Technology (ICT)", credits: 2, practicalFee: 0, level: 3 },
+            { code: "FDE3020", name: "Empowering for Independent Learning", credits: 0, practicalFee: 0, level: 3 },
+            { code: "ADE3200", name: "Applied Calculus I", credits: 2, practicalFee: 0, level: 3 },
+            
+            // Level 3 Compulsory Open Elective Courses
+            { code: "LLU3261", name: "Understanding Law", credits: 2, practicalFee: 0, level: 3 },
+            { code: "OSU3208", name: "Managing Your Work and People", credits: 2, practicalFee: 0, level: 3 },
+            { code: "DSU3298", name: "Introduction to Sri Lankan Society", credits: 2, practicalFee: 0, level: 3 },
+            { code: "FNU3200", name: "Ethics in Science and Technology", credits: 2, practicalFee: 0, level: 3 },
+            { code: "FNU3201", name: "Communication Skills", credits: 2, practicalFee: 0, level: 3 },
+            { code: "ADU3218", name: "Basic Statistics", credits: 2, practicalFee: 0, level: 3 },
+            
+            // Level 3 Botany
+            { code: "BYU3500", name: "Diversity of Plants", credits: 5, practicalFee: 600, level: 3 },
+            { code: "BYU3301", name: "Organisation of Cells & Plant Biochemistry", credits: 3, practicalFee: 500, level: 3 },
+            
+            // Level 3 Chemistry
+            { code: "CYU3300", name: "Basic Principles of Chemistry I", credits: 3, practicalFee: 0, level: 3 },
+            { code: "CYU3201", name: "Basic Principles of Chemistry II", credits: 2, practicalFee: 0, level: 3 },
+            { code: "CYU3302", name: "Basic Practical Chemistry", credits: 3, practicalFee: 2000, level: 3 },
+            
+            // Level 3 Physics
+            { code: "PHU3300", name: "General & Thermal Physics", credits: 3, practicalFee: 500, level: 3 },
+            { code: "PHU3301", name: "Basic Electromagnetism", credits: 3, practicalFee: 500, level: 3 },
+            { code: "PHU3202", name: "Waves in Physics", credits: 2, practicalFee: 0, level: 3 },
+            
+            // Level 3 Zoology
+            { code: "ZYU3500", name: "Animal Life and Diversity", credits: 5, practicalFee: 500, level: 3 },
+            { code: "ZYU3301", name: "Biogeography", credits: 3, practicalFee: 0, level: 3 },
+            
+            // Level 3 Applied Mathematics
+            { code: "ADU3300", name: "Vector Algebra", credits: 3, practicalFee: 0, level: 3 },
+            { code: "ADU3201", name: "Basic Statistics", credits: 2, practicalFee: 0, level: 3 },
+            { code: "ADU3302", name: "Differential Equations", credits: 3, practicalFee: 0, level: 3 },
+            
+            // Level 3 Pure Mathematics
+            { code: "PEU3300", name: "Mathematical Logic and Proofs", credits: 3, practicalFee: 0, level: 3 },
+            { code: "PEU3301", name: "Foundation of Mathematics", credits: 3, practicalFee: 0, level: 3 },
+            { code: "PEU3202", name: "Vector Spaces", credits: 2, practicalFee: 0, level: 3 },
+            
+            // Level 3 Computer Science
+            { code: "CSU3200", name: "Introduction to Computer Programming", credits: 2, practicalFee: 500, level: 3 },
+            { code: "CSU3301", name: "Database Design and Implementation", credits: 3, practicalFee: 500, level: 3 },
+            { code: "CSU3302", name: "Data Structures & Algorithms", credits: 3, practicalFee: 500, level: 3 },
+            
+            // Level 4 Botany
+            { code: "BYU4300", name: "Plant Physiology", credits: 3, practicalFee: 600, level: 4 },
+            { code: "BYU4301", name: "Genetics and Evolution", credits: 3, practicalFee: 0, level: 4 },
+            { code: "BYU4302", name: "Systematics of Higher Plants and Animals", credits: 3, practicalFee: 0, level: 4 },
+            { code: "BYU4303", name: "Principles of Microbiology", credits: 3, practicalFee: 600, level: 4 },
+            
+            // Level 4 Chemistry
+            { code: "CYU4300", name: "Inorganic Chemistry", credits: 3, practicalFee: 0, level: 4 },
+            { code: "CYU4301", name: "Concepts in Chemistry", credits: 3, practicalFee: 0, level: 4 },
+            { code: "CYU4303", name: "Organic Chemistry I", credits: 3, practicalFee: 0, level: 4 },
+            { code: "CYU4302", name: "Practical Chemistry II", credits: 3, practicalFee: 2900, level: 4 },
+            
+            // Level 4 Physics
+            { code: "PHU4300", name: "Modern Physics", credits: 3, practicalFee: 0, level: 4 },
+            { code: "PHU4301", name: "Electronics", credits: 3, practicalFee: 750, level: 4 },
+            { code: "PHU4302", name: "Optics", credits: 3, practicalFee: 500, level: 4 },
+            { code: "PHU4303", name: "Mathematical Methods for Physics", credits: 3, practicalFee: 0, level: 4 },
+            
+            // Level 4 Zoology
+            { code: "ZYU4300", name: "Animal Form and Function", credits: 3, practicalFee: 500, level: 4 },
+            { code: "ZYU4301", name: "Ecology", credits: 3, practicalFee: 500, level: 4 },
+            { code: "ZYU4302", name: "Animal Development", credits: 3, practicalFee: 0, level: 4 },
+            { code: "ZYU4303", name: "Animal Behaviour", credits: 3, practicalFee: 0, level: 4 },
+            
+            // Level 4 Applied Mathematics
+            { code: "ADU4300", name: "Statistical Distribution Theory", credits: 3, practicalFee: 0, level: 4 },
+            { code: "ADU4301", name: "Newtonian Mechanics I", credits: 3, practicalFee: 0, level: 4 },
+            { code: "ADU4302", name: "Vector Calculus", credits: 3, practicalFee: 0, level: 4 },
+            { code: "ADU4303", name: "Applied Linear Algebra", credits: 3, practicalFee: 0, level: 4 },
+            
+            // Level 4 Pure Mathematics
+            { code: "PEU4300", name: "Real Analysis I", credits: 3, practicalFee: 0, level: 4 },
+            { code: "PEU4301", name: "Real Analysis II", credits: 3, practicalFee: 0, level: 4 },
+            { code: "PEU4302", name: "Linear Algebra", credits: 3, practicalFee: 0, level: 4 },
+            { code: "PEU4303", name: "Group Theory I", credits: 3, practicalFee: 0, level: 4 },
+            
+            // Level 4 Computer Science
+            { code: "CSU4300", name: "Operating Systems", credits: 3, practicalFee: 0, level: 4 },
+            { code: "CSU4301", name: "Object Oriented Programming", credits: 3, practicalFee: 500, level: 4 },
+            { code: "CSU4302", name: "System Analysis & Software Engineering", credits: 3, practicalFee: 0, level: 4 },
+            { code: "CSU4303", name: "Computer Networks", credits: 3, practicalFee: 500, level: 4 },
+            
+            // Level 5 Open Elective Courses
+            { code: "ADU5318", name: "Bio Statistics", credits: 3, practicalFee: 0, level: 5 },
+            { code: "ADU5319", name: "Design and Analysis of Experiments", credits: 3, practicalFee: 0, level: 5 },
+            { code: "ADU5320", name: "Introduction to MATLAB Software", credits: 3, practicalFee: 0, level: 5 },
+            { code: "BYU5318", name: "Environmental Studies", credits: 3, practicalFee: 0, level: 5 },
+            { code: "PHU5318", name: "Electronics for Biology Students", credits: 3, practicalFee: 500, level: 5 },
+            
+            // Level 5 Botany
+            { code: "BYU5300", name: "Environmental and Applied Microbiology", credits: 3, practicalFee: 600, level: 5 },
+            { code: "BYU5301", name: "Plant Pathology", credits: 3, practicalFee: 0, level: 5 },
+            { code: "BYU5302", name: "Plant Growth and Development", credits: 3, practicalFee: 600, level: 5 },
+            { code: "BYU5303", name: "Plants and Man", credits: 3, practicalFee: 0, level: 5 },
+            { code: "BYU5304", name: "Soils and Plant Growth", credits: 3, practicalFee: 0, level: 5 },
+            { code: "BYU5305", name: "Literature Review in Botany", credits: 3, practicalFee: 0, level: 5 },
+            { code: "BYU5306", name: "Plant Breeding", credits: 3, practicalFee: 1000, level: 5 },
+            { code: "BYU5307", name: "Forest Management and Conservation", credits: 3, practicalFee: 600, level: 5 },
+            { code: "BYU5308", name: "Postharvest Technology", credits: 3, practicalFee: 600, level: 5 },
+            { code: "BYU5610", name: "Research Project in Botany", credits: 6, practicalFee: 0, level: 5 },
+            
+            // Level 5 Chemistry
+            { code: "CYU5300", name: "Organometallic Chemistry", credits: 3, practicalFee: 0, level: 5 },
+            { code: "CYU5301", name: "Concepts in Spectroscopy", credits: 3, practicalFee: 0, level: 5 },
+            { code: "CYU5302", name: "Analytical Chemistry", credits: 3, practicalFee: 1800, level: 5 },
+            { code: "CYU5303", name: "Organic Chemistry II", credits: 3, practicalFee: 1800, level: 5 },
+            { code: "CYU5304", name: "Chemistry of Biomolecules", credits: 3, practicalFee: 0, level: 5 },
+            { code: "CYU5306", name: "Biochemistry", credits: 3, practicalFee: 0, level: 5 },
+            { code: "CYU5307", name: "Chemical Aspects of Food Industry", credits: 3, practicalFee: 1100, level: 5 },
+            { code: "CYU5308", name: "Instrumental Methods of Analysis", credits: 3, practicalFee: 1800, level: 5 },
+            { code: "CYU5310", name: "Literature Project in Chemistry", credits: 3, practicalFee: 0, level: 5 },
+            { code: "CYU5611", name: "Research Project in Chemistry", credits: 6, practicalFee: 0, level: 5 },
+            { code: "CYU5312", name: "Industrial Chemistry", credits: 3, practicalFee: 0, level: 5 },
+            
+            // Level 5 Physics
+            { code: "PHU5300", name: "Nuclear & Particle Physics", credits: 3, practicalFee: 0, level: 5 },
+            { code: "PHU5301", name: "Practical Physics", credits: 3, practicalFee: 0, level: 5 },
+            { code: "PHU5302", name: "Atmospheric Physics", credits: 3, practicalFee: 0, level: 5 },
+            { code: "PHU5303", name: "Data Acquisition and Signal Processing", credits: 3, practicalFee: 0, level: 5 },
+            { code: "PHU5305", name: "Essentials of Geology", credits: 3, practicalFee: 0, level: 5 },
+            { code: "PHU5306", name: "Applied Geology", credits: 3, practicalFee: 1000, level: 5 },
+            { code: "PHU5307", name: "Medical Physics", credits: 3, practicalFee: 0, level: 5 },
+            { code: "PHU5309", name: "Literature Survey Project", credits: 3, practicalFee: 0, level: 5 },
+            { code: "PHU5610", name: "Research Project in Physics", credits: 6, practicalFee: 0, level: 5 },
+            { code: "PHU5313", name: "Advanced Electromagnetism", credits: 3, practicalFee: 0, level: 5 },
+            { code: "PHU5314", name: "Thermodynamics", credits: 3, practicalFee: 0, level: 5 },
+            { code: "PHU5315", name: "Renewable Energy Sources", credits: 3, practicalFee: 0, level: 5 },
+            
+            // Level 5 Zoology
+            { code: "ZYU5300", name: "Aquatic Biology", credits: 3, practicalFee: 500, level: 5 },
+            { code: "ZYU5301", name: "Fish Biology & Fishery Management", credits: 3, practicalFee: 0, level: 5 },
+            { code: "ZYU5304", name: "Parasitology", credits: 3, practicalFee: 0, level: 5 },
+            { code: "ZYU5305", name: "Human Biology", credits: 3, practicalFee: 0, level: 5 },
+            { code: "ZYU5306", name: "Entomology", credits: 3, practicalFee: 0, level: 5 },
+            { code: "ZYU5307", name: "Mammalian Biology", credits: 3, practicalFee: 0, level: 5 },
+            { code: "ZYU5608", name: "Zoology Project", credits: 6, practicalFee: 0, level: 5 },
+            { code: "ZYU5309", name: "Paleobiology", credits: 3, practicalFee: 2000, level: 5 },
+            { code: "ZYU5312", name: "Zoology Essay", credits: 3, practicalFee: 0, level: 5 },
+            { code: "ZYU5313", name: "Research Methodology", credits: 3, practicalFee: 0, level: 5 },
+            { code: "ZYU5314", name: "Fundamentals of Ornithology", credits: 3, practicalFee: 1000, level: 5 },
+            { code: "ZYU5315", name: "Fundamentals of Molecular Biology", credits: 3, practicalFee: 1000, level: 5 },
+            
+            // Level 5 Computer Science
+            { code: "CSU5300", name: "IT Project Management", credits: 3, practicalFee: 0, level: 5 },
+            { code: "CSU5302", name: "Web Technologies", credits: 3, practicalFee: 500, level: 5 },
+            { code: "CSU5303", name: "Management Information Systems", credits: 3, practicalFee: 0, level: 5 },
+            { code: "CSU5304", name: "Mathematics for Computing", credits: 3, practicalFee: 0, level: 5 },
+            { code: "CSU5305", name: "Theory of Computing", credits: 3, practicalFee: 0, level: 5 },
+            { code: "CSU5306", name: "Digital Electronics", credits: 3, practicalFee: 0, level: 5 },
+            { code: "CSU5308", name: "Artificial Intelligence", credits: 3, practicalFee: 500, level: 5 },
+            { code: "CSU5309", name: "Information Security & Cryptography", credits: 3, practicalFee: 0, level: 5 },
+            { code: "CSU5310", name: "Computer Architecture", credits: 3, practicalFee: 0, level: 5 },
+            { code: "CSU5311", name: "Computer Graphics", credits: 3, practicalFee: 500, level: 5 },
+            { code: "CSU5312", name: "Wireless and Cellular Networks", credits: 3, practicalFee: 0, level: 5 },
+            { code: "CSU5320", name: "Project in Computer Science", credits: 3, practicalFee: 0, level: 5 },
+            
+            // Level 5 Applied Mathematics
+            { code: "ADU5300", name: "Linear Programming", credits: 3, practicalFee: 0, level: 5 },
+            { code: "ADU5301", name: "Regression Analysis I", credits: 3, practicalFee: 0, level: 5 },
+            { code: "ADU5302", name: "Mathematical Methods", credits: 3, practicalFee: 0, level: 5 },
+            { code: "ADU5303", name: "Newtonian Mechanics II", credits: 3, practicalFee: 0, level: 5 },
+            { code: "ADU5304", name: "Operational Research", credits: 3, practicalFee: 0, level: 5 },
+            { code: "ADU5305", name: "Statistical Inference", credits: 3, practicalFee: 0, level: 5 },
+            { code: "ADU5306", name: "Fluid Mechanics", credits: 3, practicalFee: 0, level: 5 },
+            { code: "ADU5307", name: "Numerical Methods", credits: 3, practicalFee: 0, level: 5 },
+            { code: "ADU5308", name: "Graph Theory", credits: 3, practicalFee: 0, level: 5 },
+            { code: "ADU5615", name: "Project in Mathematics", credits: 6, practicalFee: 0, level: 5 },
+            
+            // Level 5 Pure Mathematics
+            { code: "PEU5300", name: "Riemann Integration", credits: 3, practicalFee: 0, level: 5 },
+            { code: "PEU5302", name: "Combinatorics", credits: 3, practicalFee: 0, level: 5 },
+            { code: "PEU5303", name: "Number Theory", credits: 3, practicalFee: 0, level: 5 },
+            { code: "PEU5304", name: "Introduction to Complex Analysis", credits: 3, practicalFee: 0, level: 5 },
+            { code: "PEU5305", name: "Complex Analysis I", credits: 3, practicalFee: 0, level: 5 }
+        ];
+
+        // DOM Elements
+        const courseGrid = document.getElementById('courseGrid');
+        const selectedList = document.getElementById('selectedList');
+        const calculateBtn = document.getElementById('calculateBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const searchBtn = document.getElementById('searchBtn');
+        const levelBtns = document.querySelectorAll('.level-btn');
+        const searchInput = document.getElementById('searchInput');
+        const backToTop = document.getElementById('backToTop');
+        
+        // State
+        let selectedCourses = [];
+        const pricePerCredit = 2740;
+        const studentshipFee = 3000;
+        let currentLevel = 3;
+        let currentSearchTerm = '';
+        
+        // Initialize
+        function init() {
+            renderCourses(currentLevel);
+            setupEventListeners();
+        }
+        
+        // Set up event listeners
+        function setupEventListeners() {
+            // Level selection buttons
+            levelBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentLevel = parseInt(btn.dataset.level);
+                    levelBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderCourses(currentLevel);
+                });
+            });
+            
+            // Calculate button
+            calculateBtn.addEventListener('click', calculateFees);
+            
+            // Reset button
+            resetBtn.addEventListener('click', resetSelection);
+            
+            // Search button
+            searchBtn.addEventListener('click', () => {
+                currentSearchTerm = searchInput.value.trim().toLowerCase();
+                renderCourses(); // No level filter when searching
+            });
+            
+            // Search input keyup
+            searchInput.addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') {
+                    currentSearchTerm = searchInput.value.trim().toLowerCase();
+                    renderCourses(); // No level filter when searching
+                }
+            });
+            
+            // Clear search when clicking level buttons
+            levelBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentSearchTerm = '';
+                    searchInput.value = '';
+                    currentLevel = parseInt(btn.dataset.level);
+                    levelBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderCourses(currentLevel);
+                });
+            });
+            
+            // Back to top button
+            backToTop.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+            
+            // Show/hide back to top button
+            window.addEventListener('scroll', () => {
+                if (window.pageYOffset > 300) {
+                    backToTop.style.display = 'flex';
+                } else {
+                    backToTop.style.display = 'none';
+                }
+            });
+        }
+        
+        // Render courses with optional level filter and search
+        function renderCourses(level) {
+            // Save scroll position before rendering
+            const scrollPosition = courseGrid.scrollTop;
+            
+            courseGrid.innerHTML = '';
+            
+            let filteredCourses = courses;
+            
+            // Apply level filter only if not searching
+            if (!currentSearchTerm) {
+                filteredCourses = filteredCourses.filter(course => course.level === level);
+            }
+            
+            // Apply search filter if there's a search term
+            if (currentSearchTerm) {
+                filteredCourses = filteredCourses.filter(course => 
+                    course.code.toLowerCase().includes(currentSearchTerm) || 
+                    course.name.toLowerCase().includes(currentSearchTerm)
+                );
+            }
+            
+            if (filteredCourses.length === 0) {
+                courseGrid.innerHTML = '<p class="empty-state">No courses found. Try a different search term.</p>';
+                return;
+            }
+            
+            filteredCourses.forEach(course => {
+                const isSelected = selectedCourses.some(c => c.code === course.code);
+                
+                const courseCard = document.createElement('div');
+                courseCard.className = 'course-card';
+                courseCard.innerHTML = `
+                    <h3>${course.code} - ${course.name}</h3>
+                    <p><i class="fas fa-graduation-cap"></i> Level ${course.level}</p>
+                    <p><i class="fas fa-clock"></i> Credits: ${course.credits}</p>
+                    ${course.practicalFee > 0 ? `<p><i class="fas fa-flask"></i> Practical Fee: Rs. ${course.practicalFee.toLocaleString()}</p>` : ''}
+                    <div class="course-meta">
+                        <div class="credits">${course.credits} Credit${course.credits !== 1 ? 's' : ''}</div>
+                        ${course.practicalFee > 0 ? `<div class="fee">Practical: Rs. ${course.practicalFee.toLocaleString()}</div>` : ''}
+                    </div>
+                    <button class="add-btn" data-code="${course.code}">
+                        <i class="fas fa-${isSelected ? 'check' : 'plus'}"></i>
+                    </button>
+                `;
+                
+                courseGrid.appendChild(courseCard);
+                
+                // Add event listener to the button
+                const addBtn = courseCard.querySelector('.add-btn');
+                addBtn.addEventListener('click', () => {
+                    toggleCourseSelection(course);
+                    // Restore scroll position after rendering
+                    courseGrid.scrollTop = scrollPosition;
+                });
+            });
+            
+            // Restore scroll position after rendering
+            courseGrid.scrollTop = scrollPosition;
+        }
+        
+        // Toggle course selection
+        function toggleCourseSelection(course) {
+            const index = selectedCourses.findIndex(c => c.code === course.code);
+            
+            if (index > -1) {
+                // Remove course
+                selectedCourses.splice(index, 1);
+            } else {
+                // Add course
+                selectedCourses.push(course);
+            }
+            
+            renderSelectedCourses();
+            renderCourses(currentLevel);
+        }
+        
+        // Render selected courses
+        function renderSelectedCourses() {
+            if (selectedCourses.length === 0) {
+                selectedList.innerHTML = '<div class="empty-state">No courses selected yet. Please add courses from above.</div>';
+                return;
+            }
+            
+            selectedList.innerHTML = '';
+            
+            // Calculate total credits
+            const totalCredits = selectedCourses.reduce((sum, course) => sum + course.credits, 0);
+            
+            selectedCourses.forEach(course => {
+                const item = document.createElement('div');
+                item.className = 'selected-item';
+                item.innerHTML = `
+                    <div>
+                        <strong>${course.code}</strong>
+                        <div>${course.name}</div>
+                        <div style="font-size: 0.9rem; margin-top: 5px;">
+                            <span class="credits" style="font-size: 0.8rem;">${course.credits} Credits</span> 
+                            ${course.practicalFee > 0 ? `<span class="fee" style="font-size: 0.8rem;">Practical: Rs. ${course.practicalFee.toLocaleString()}</span>` : ''}
+                        </div>
+                    </div>
+                    <button class="remove-btn" data-code="${course.code}">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                
+                selectedList.appendChild(item);
+                
+                // Add event listener to remove button
+                const removeBtn = item.querySelector('.remove-btn');
+                removeBtn.addEventListener('click', () => {
+                    selectedCourses = selectedCourses.filter(c => c.code !== course.code);
+                    renderSelectedCourses();
+                    renderCourses(currentLevel);
+                });
+            });
+            
+            // Show credit warning if over limit
+            if (totalCredits > 30) {
+                const warning = document.createElement('div');
+                warning.className = 'credit-warning';
+                warning.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Warning: You have selected ${totalCredits} credits (max 30 allowed)`;
+                selectedList.parentNode.insertBefore(warning, selectedList);
+            }
+        }
+        
+        // Calculate fees and update display
+        function calculateFees() {
+            if (selectedCourses.length === 0) {
+                alert('Please select at least one course');
+                return;
+            }
+            
+            // Calculate totals
+            const totalCredits = selectedCourses.reduce((sum, course) => sum + course.credits, 0);
+            const totalPracticalFees = selectedCourses.reduce((sum, course) => sum + course.practicalFee, 0);
+            const totalCourseFees = totalCredits * pricePerCredit;
+            
+            // Calculate voucher amounts
+            const voucher1Amount = Math.round(totalCourseFees * 0.6) + studentshipFee;
+            const voucher2Amount = Math.round(totalCourseFees * 0.4) + totalPracticalFees;
+            const totalPayable = voucher1Amount + voucher2Amount;
+            
+            // Update voucher displays
+            document.querySelector('.vouchers .voucher:nth-child(1) .voucher-row:nth-child(1) span:last-child').textContent = 
+                `Rs. ${Math.round(totalCourseFees * 0.6).toLocaleString()}.00`;
+            document.querySelector('.vouchers .voucher:nth-child(1) .voucher-total').textContent = 
+                `Rs. ${voucher1Amount.toLocaleString()}.00`;
+            
+            document.querySelector('.vouchers .voucher:nth-child(2) .voucher-row:nth-child(1) span:last-child').textContent = 
+                `Rs. ${Math.round(totalCourseFees * 0.4).toLocaleString()}.00`;
+            document.querySelector('.vouchers .voucher:nth-child(2) .voucher-row:nth-child(2) span:last-child').textContent = 
+                `Rs. ${totalPracticalFees.toLocaleString()}.00`;
+            document.querySelector('.vouchers .voucher:nth-child(2) .voucher-total').textContent = 
+                `Rs. ${voucher2Amount.toLocaleString()}.00`;
+            
+            // Update summary
+            document.querySelector('.summary-row:nth-child(1) span:last-child').textContent = totalCredits;
+            document.querySelector('.summary-row:nth-child(2) span:last-child').textContent = 
+                `Rs. ${totalCourseFees.toLocaleString()}.00`;
+            document.querySelector('.summary-row:nth-child(3) span:last-child').textContent = 
+                `Rs. ${totalPracticalFees.toLocaleString()}.00`;
+            document.querySelector('.summary-total').textContent = 
+                `Total Payable: Rs. ${totalPayable.toLocaleString()}.00`;
+        }
+        
+        // Reset selection
+        function resetSelection() {
+            if (selectedCourses.length === 0) return;
+            
+            if (confirm('Are you sure you want to clear all selected courses?')) {
+                selectedCourses = [];
+                renderSelectedCourses();
+                renderCourses(currentLevel);
+                
+                // Reset voucher displays
+                document.querySelector('.vouchers .voucher:nth-child(1) .voucher-row:nth-child(1) span:last-child').textContent = 'Rs. 0.00';
+                document.querySelector('.vouchers .voucher:nth-child(1) .voucher-total').textContent = 'Rs. 3,000.00';
+                
+                document.querySelector('.vouchers .voucher:nth-child(2) .voucher-row:nth-child(1) span:last-child').textContent = 'Rs. 0.00';
+                document.querySelector('.vouchers .voucher:nth-child(2) .voucher-row:nth-child(2) span:last-child').textContent = 'Rs. 0.00';
+                document.querySelector('.vouchers .voucher:nth-child(2) .voucher-total').textContent = 'Rs. 0.00';
+                
+                // Reset summary
+                document.querySelector('.summary-row:nth-child(1) span:last-child').textContent = '0';
+                document.querySelector('.summary-row:nth-child(2) span:last-child').textContent = 'Rs. 0.00';
+                document.querySelector('.summary-row:nth-child(3) span:last-child').textContent = 'Rs. 0.00';
+                document.querySelector('.summary-total').textContent = 'Total Payable: Rs. 3,000.00';
+            }
+        }
+        
+        // Initialize the application
+        init();
+    </script>
+</body>
+</html>
